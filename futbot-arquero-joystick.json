@@ -1,0 +1,50 @@
+{
+  "id": "futbot-arquero-joystick",
+  "titulo": "FutBot: arquero controlado con joystick",
+  "descripcion": "Un mini arquero de fútbol de mesa: con un joystick analógico movemos la paleta/barrera del arquero (servo) de 0° a 180° para atajar los disparos.",
+  "imagen": "578d07bc-8757-4989-8ee7-3cc22ecd5bb7.png",
+  "componentes": [
+    "Arduino UNO",
+    "Joystick analógico (VRx, VRy, SEL, VCC, GND)",
+    "Micro-servo 9g (SG90 o similar) para la paleta del arquero",
+    "Cables dupont",
+    "Estructura simple: base de cartón/madera/impresión 3D y paleta (brazo) acoplada al servo"
+  ],
+  "conexiones": {
+    "joystick": {
+      "VCC": "5V",
+      "GND": "GND",
+      "VRx/HOR": "A0",
+      "VRy/VER": "A1",
+      "SEL": "D2 (INPUT_PULLUP)"
+    },
+    "servo": {
+      "SEÑAL": "D9 (PWM)",
+      "VCC": "5V",
+      "GND": "GND"
+    }
+  },
+  "utilidad": "Proyecto lúdico para practicar lectura analógica, mapeo de valores y control de servos. Ideal para ferias y competencias de puntería: un jugador patea y otro ataja moviendo el joystick.",
+  "codigo_arduino": {
+    "archivo": "futbot_arquero_joystick.ino",
+    "lenguaje": "C/C++ (Arduino)",
+    "contenido": "#include <Servo.h>\n\nconst int PIN_VRX = A0;     // eje horizontal del joystick\nconst int PIN_VRY = A1;     // eje vertical (reservado para mejoras)\nconst int PIN_SEL = 2;      // botón del joystick\nconst int PIN_SERVO = 9;    // servo del arquero\n\nServo arquero;\n\n// zona muerta para evitar vibración cuando el joystick está al centro\nconst int DEAD_BAND = 6;  // en pasos de 0..1023\n\nvoid setup(){\n  arquero.attach(PIN_SERVO);\n  pinMode(PIN_SEL, INPUT_PULLUP);  // botón a GND al presionar\n  arquero.write(90);               // arranca centrado (arquero en el medio)\n}\n\nvoid loop(){\n  int x = analogRead(PIN_VRX);     // 0..1023\n\n  // filtro simple para suavizar\n  static int xf = x;\n  xf += (x - xf) / 4;              // low-pass\n\n  // aplicar zona muerta alrededor del centro\n  int centro = 512;\n  if (abs(xf - centro) < DEAD_BAND) xf = centro;\n\n  // mapear a ángulo del servo\n  int ang = map(xf, 0, 1023, 0, 180);\n  ang = constrain(ang, 0, 180);\n  arquero.write(ang);\n\n  // botón: recentrar rápido\n  if (digitalRead(PIN_SEL) == LOW){\n    arquero.write(90);\n    delay(150); // anti-rebote\n  }\n\n  delay(10);\n}\n"
+  },
+  "pasos": [
+    "Monta el servo en la base y atornilla una paleta/barra al brazo del servo (será el arquero).",
+    "Conecta el joystick: VCC a 5V, GND a GND, VRx a A0, VRy a A1, SEL a D2.",
+    "Conecta el servo: señal a D9, VCC a 5V, GND a GND. Si el servo es más grande, usa fuente externa de 5V y une las tierras.",
+    "Carga el sketch y prueba moviendo el joystick para atajar. Presiona el botón para volver al centro rápido."
+  ],
+  "mejoras_opcionales": [
+    "Usar VRy para saltos rápidos (arriba = 0°, abajo = 180°).",
+    "Agregar un buzzer para celebrar atajadas.",
+    "Límites mecánicos impresos en 3D para proteger el servo."
+  ],
+  "seguridad_y_notas": [
+    "Si el servo zumba, aumenta el filtro o la zona muerta.",
+    "Para servos más potentes, alimentar externamente (5V 1A) y compartir GND con Arduino.",
+    "Fijar bien el brazo del servo para evitar que se afloje en los golpes."
+  ],
+  "tags": ["Arduino", "FutBot", "Arquero", "Joystick", "Servo", "Robótica educativa", "Juego STEM"]
+}
