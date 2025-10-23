@@ -1,0 +1,50 @@
+{
+  "id": "steve-minecraft-saludador",
+  "titulo": "Steve de Minecraft que saluda",
+  "descripcion": "Figura de Steve que mueve el brazo para saludar cuando detecta a alguien cerca. El sensor ultrasónico mide la distancia y un servo agita el brazo. Ideal para mesa lúdica en eventos.",
+  "imagen": "968a5540-6173-4494-bae0-1920a1db3fa3.png",
+  "componentes": [
+    "Arduino UNO",
+    "Sensor ultrasónico HC-SR04 (VCC, TRIG, ECHO, GND)",
+    "Micro-servo 9g (brazo de Steve)",
+    "Base y brazo (cartón/impresión 3D/foam)",
+    "Cables dupont"
+  ],
+  "conexiones": {
+    "hc_sr04": {
+      "VCC": "5V",
+      "GND": "GND",
+      "TRIG": "D3",
+      "ECHO": "D4"
+    },
+    "servo": {
+      "SEÑAL": "D6 (PWM)",
+      "VCC": "5V",
+      "GND": "GND"
+    }
+  },
+  "utilidad": "Aprender sensado de distancia, tiempos de eco y control de servos con una temática divertida (Minecraft).",
+  "codigo_arduino": {
+    "archivo": "steve_saludador.ino",
+    "lenguaje": "C/C++ (Arduino)",
+    "contenido": "#include <Servo.h>\\n\\n// Pines (ajústalos si usaste otros)\\nconst int PIN_TRIG = 3;\\nconst int PIN_ECHO = 4;\\nconst int PIN_SERVO = 6;\\n\\nServo brazo;\\n\\nlong medirDist(){\\n  digitalWrite(PIN_TRIG, LOW);\\n  delayMicroseconds(2);\\n  digitalWrite(PIN_TRIG, HIGH);\\n  delayMicroseconds(10);\\n  digitalWrite(PIN_TRIG, LOW);\\n  long dur = pulseIn(PIN_ECHO, HIGH, 30000); // timeout ~30 ms\\n  if(dur == 0) return 999;\\n  float cm = (dur/2.0) / 29.1;\\n  return (long)cm;\\n}\\n\\nvoid saludar(){\\n  // agita el brazo 3 veces\\n  for(int i=0;i<3;i++){\\n    brazo.write(40); delay(220);\\n    brazo.write(110); delay(220);\\n  }\\n  brazo.write(80); // posición de reposo\\n}\\n\\nvoid setup(){\\n  pinMode(PIN_TRIG, OUTPUT);\\n  pinMode(PIN_ECHO, INPUT);\\n  brazo.attach(PIN_SERVO);\\n  brazo.write(80);\\n}\\n\\nvoid loop(){\\n  long d = medirDist();\\n  if(d < 50){           // a menos de 50 cm, saluda\\n    saludar();\\n    delay(1200);        // pequeño descanso para no disparar continuo\\n  } else {\\n    brazo.write(80);\\n    delay(60);\\n  }\\n}\\n"
+  },
+  "pasos": [
+    "Armar la figura de Steve y fijar el micro-servo al hombro con el brazo atornillado al horn del servo.",
+    "Conectar el HC-SR04: VCC a 5V, GND a GND, TRIG a D3, ECHO a D4.",
+    "Conectar el servo: señal a D6 (PWM), VCC a 5V y GND a GND.",
+    "Cargar el sketch y probar acercando la mano; Steve debería saludar."
+  ],
+  "mejoras_opcionales": [
+    "Agregar un buzzer que suene tipo ‘pling’ al saludar.",
+    "Iluminar los ojos con dos LED azules (D8 y D9 con resistencias).",
+    "Usar NeoPixels en la base para efectos cuando alguien se acerca.",
+    "Cambiar el umbral de distancia (20–80 cm) según el ambiente."
+  ],
+  "seguridad_y_notas": [
+    "Si el servo vibra, revisá la alimentación. Para servos más grandes, usar fuente externa de 5V y GND común.",
+    "El ECHO del HC-SR04 entrega 5V: no requiere divisor en Arduino UNO.",
+    "Evitar que el brazo choque con topes mecánicos; ajustar ángulos en el código (40–110)."
+  ],
+  "tags": ["Arduino", "Minecraft", "Ultrasónico", "Servo", "Interacción", "Lúdico", "Educación STEM"]
+}
