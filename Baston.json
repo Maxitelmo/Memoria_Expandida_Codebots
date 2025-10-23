@@ -1,0 +1,14 @@
+{
+  "nombre": "Bastón Ultrasónico",
+  "tipo": "asistencia para personas ciegas",
+  "creador": "Equipo CODEBOTS",
+  "ciudad": "Córdoba",
+  "componentes": [
+    "Arduino UNO",
+    "Sensor ultrasónico HC-SR04",
+    "Zumbador piezo",
+    "Batería 5V"
+  ],
+  "funcion": "Detecta obstáculos delante de la persona y avisa con beeps más rápidos cuanto más cerca están.",
+  "frase": "Escucho el camino por vos: si algo se acerca, te aviso antes."
+}

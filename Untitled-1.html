@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CODEBOTS · Memoria Expandida</title>
+  <style>
+    :root{--bg:#0b1220;--card:#0f172a;--muted:#94a3b8;--text:#e5e7eb;--accent:#22d3ee}
+    *{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,Ubuntu;
+    background:linear-gradient(135deg,#0b1220,#0f172a);color:var(--text)}
+    .wrap{max-width:720px;margin:0 auto;padding:28px}
+    .card{background:var(--card);border:1px solid #1f2937;border-radius:18px;
+      padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .header{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+    .logo{width:44px;height:44px;border-radius:12px;border:1px solid #1f2937;object-fit:contain;background:#07101f;padding:6px}
+    h1{font-size:1.35rem;margin:0}
+    .meta{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+    .pill{border:1px solid #243244;border-radius:999px;padding:8px 12px;text-align:center}
+    .story{font-size:1.05rem;line-height:1.6;background:#0b1324;border:1px solid #1f2736;border-radius:14px;padding:16px;margin:10px 0}
+    .btns{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{padding:12px 14px;border-radius:12px;border:1px solid #1f2937;background:#0b1324;color:var(--text);text-decoration:none;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#001018;border:none;font-weight:700}
+    footer{margin-top:14px;color:var(--muted);font-size:.9rem;text-align:center}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="header">
+      <img src="LOGO_CODE_transparente.png" class="logo" alt="CodeBOTS">
+      <div>
+        <h1 id="titulo">Memoria expandida</h1>
+        <div class="meta" id="sub">Cargando historia...</div>
+      </div>
+    </div>
+
+    <div class="grid" id="chips"></div>
+    <div class="story" id="texto">…</div>
+
+    <div class="btns">
+      <button class="btn primary" id="hablar">🗣 Escuchar mi historia</button>
+      <button class="btn" id="copiar">🔗 Copiar enlace</button>
+    </div>
+
+    <footer>© CODEBOTS · Narrativas con IA (demo sin servidor)</footer>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const id = params.get("objeto") || "baston";
+const ES_AR = navigator.language?.startsWith("es");
+
+async function cargar(){
+  try{
+    const res = await fetch(id + ".json", {cache:"no-store"});
+    if(!res.ok) throw new Error("Perfil no encontrado");
+    const data = await res.json();
+    render(data);
+  }catch(e){
+    document.getElementById("texto").textContent = "No se encontró el perfil '" + id + "'.";
+    document.getElementById("sub").textContent = "Error al cargar el perfil";
+  }
+}
+
+function narrar(data){
+  const comp = (data.componentes||[]).join(", ");
+  const ciudad = data.ciudad || "Córdoba";
+  return `Soy ${data.nombre}, un ${data.tipo}. Nací en CODEBOTS (${ciudad}) y me construyeron ${data.creador}. Uso ${comp} para ${data.funcion}. ${data.frase || ""}`.replace(/\s+/g," ").trim();
+}
+
+function render(d){
+  document.getElementById("titulo").textContent = d.nombre;
+  document.getElementById("sub").textContent = `${d.tipo} · ${d.creador}`;
+
+  const chips = document.getElementById("chips");
+  chips.innerHTML = "";
+  (d.componentes||[]).forEach(x=>{
+    const span = document.createElement("div");
+    span.className = "pill"; span.textContent = x; chips.appendChild(span);
+  });
+
+  const texto = narrar(d);
+  document.getElementById("texto").textContent = texto;
+
+  const voz = new SpeechSynthesisUtterance(texto);
+  voz.lang = ES_AR ? "es-AR" : "en-US";
+  document.getElementById("hablar").onclick = () => {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(voz);
+  };
+
+  document.getElementById("copiar").onclick = async () => {
+    await navigator.clipboard.writeText(location.href);
+    alert("Enlace copiado al portapapeles");
+  };
+}
+
+cargar();
+</script>
+</body>
+</html>
