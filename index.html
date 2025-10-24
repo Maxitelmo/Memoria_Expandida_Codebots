@@ -5,85 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CODEBOTS · Galería de Proyectos</title>
   <style>
-    body {
-      margin: 0;
-      font-family: system-ui, Segoe UI, Roboto, Ubuntu;
-      background: linear-gradient(135deg,#0b1220,#0f172a);
-      color: #e5e7eb;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-    header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 20px;
-    }
-    img.logo {
-      width: 90px;
-      height: 90px;
-      object-fit: contain;
-    }
-    h1 {
-      font-size: 1.8rem;
-      margin: 0;
-    }
-    main {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
-      gap: 20px;
-      width: 90%;
-      max-width: 900px;
-      margin-top: 20px;
-    }
-    .card {
-      background: #0f172a;
-      border: 1px solid #1f2937;
-      border-radius: 14px;
-      padding: 14px;
-      text-align: center;
-      transition: transform .2s, box-shadow .3s;
-    }
-    .card:hover {
-      transform: scale(1.04);
-      box-shadow: 0 0 15px rgba(34,211,238,0.3);
-    }
-    .card img {
-      width: 100%;
-      border-radius: 10px;
-      background: #07101f;
-      height: 160px;
-      object-fit: cover;
-    }
-    .card h2 {
-      font-size: 1.2rem;
-      margin: 10px 0 6px;
-    }
-    .card p {
-      font-size: .95rem;
-      color: #94a3b8;
-      min-height: 50px;
-    }
-    a.btn {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 14px;
-      background: #22d3ee;
-      color: #001018;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: background .2s;
-    }
-    a.btn:hover { background: #0ea5e9; }
-    footer {
-      margin-top: auto;
-      padding: 12px;
-      color: #64748b;
-      font-size: .9rem;
-    }
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Ubuntu;background:linear-gradient(135deg,#0b1220,#0f172a);color:#e5e7eb;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+    header{display:flex;align-items:center;gap:16px;padding:20px}
+    img.logo{width:90px;height:90px;object-fit:contain}
+    h1{font-size:1.8rem;margin:0}
+    main{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;width:90%;max-width:900px;margin-top:20px}
+    .card{background:#0f172a;border:1px solid #1f2937;border-radius:14px;padding:14px;text-align:center;transition:transform .2s, box-shadow .3s}
+    .card:hover{transform:scale(1.04);box-shadow:0 0 15px rgba(34,211,238,.3)}
+    .card img{width:100%;border-radius:10px;background:#07101f;height:160px;object-fit:contain;padding:10px}
+    .card h2{font-size:1.2rem;margin:10px 0 6px}
+    .card p{font-size:.95rem;color:#94a3b8;min-height:50px}
+    a.btn{display:inline-block;margin-top:10px;padding:10px 14px;background:#22d3ee;color:#001018;border-radius:10px;text-decoration:none;font-weight:600;transition:background .2s}
+    a.btn:hover{background:#0ea5e9}
+    footer{margin-top:auto;padding:12px;color:#64748b;font-size:.9rem}
   </style>
 </head>
 <body>
@@ -97,21 +31,21 @@
 
   <main>
     <div class="card">
-      <img src="baston/imagen.png" alt="Bastón ultrasónico">
+      <img src="LOGO_CODE_transparente.png" alt="Bastón ultrasónico">
       <h2>Bastón para ciegos</h2>
       <p>Detecta obstáculos mediante ultrasonido y vibra para alertar al usuario.</p>
       <a class="btn" href="index_story.html?objeto=baston">Ver historia</a>
     </div>
 
     <div class="card">
-      <img src="futbot-arquero-joystick/imagen.png" alt="Futbot Arquero">
+      <img src="LOGO_CODE_transparente.png" alt="Futbot Arquero">
       <h2>FutBot Arquero</h2>
       <p>Controlá un arquero con joystick y atajá los disparos en tu mini cancha.</p>
       <a class="btn" href="index_story.html?objeto=futbot-arquero-joystick">Ver historia</a>
     </div>
 
     <div class="card">
-      <img src="steve-minecraft-saludador/imagen.png" alt="Steve Minecraft">
+      <img src="LOGO_CODE_transparente.png" alt="Steve Minecraft">
       <h2>Steve saludador</h2>
       <p>El clásico personaje de Minecraft que te saluda cuando te acercás.</p>
       <a class="btn" href="index_story.html?objeto=steve-minecraft-saludador">Ver historia</a>
