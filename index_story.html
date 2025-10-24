@@ -13,10 +13,10 @@
     .header{display:flex;gap:16px;align-items:center;margin-bottom:8px}
     .logo{width:88px;height:88px;border-radius:16px;border:1px solid #1f2937;object-fit:contain;background:#07101f;padding:10px}
     h1{font-size:1.6rem;margin:0}
-    .meta{font-size:1rem;color:var(--muted);margin-bottom:16px}
+    .meta{font-size:1rem;color:var(--muted);margin-bottom:16px;min-height:1.2em}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
     .pill{border:1px solid #243244;border-radius:999px;padding:8px 12px;text-align:center}
-    .story{font-size:1.08rem;line-height:1.65;background:#0b1324;border:1px solid #1f2736;border-radius:14px;padding:16px;margin:10px 0;min-height:110px}
+    .story{font-size:1.08rem;line-height:1.65;background:#0b1324;border:1px solid #1f2736;border-radius:14px;padding:16px;margin:10px 0;min-height:110px;white-space:pre-wrap}
     .cursor{display:inline-block;width:10px}
     .btns{display:flex;gap:12px;flex-wrap:wrap}
     .btn{padding:12px 14px;border-radius:12px;border:1px solid #1f2937;background:#0b1324;color:var(--text);text-decoration:none;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600}
@@ -36,7 +36,7 @@
       <img src="LOGO_CODE_transparente.png" class="logo" alt="CodeBOTS">
       <div>
         <h1 id="titulo">Memoria expandida</h1>
-        <div class="meta" id="sub">Cargando historia...</div>
+        <div class="meta" id="sub">Cargando historia…</div>
       </div>
     </div>
 
@@ -48,7 +48,7 @@
       <button class="btn primary" id="hablar">🗣 Escuchar mi historia</button>
       <a class="btn instagram" href="https://www.instagram.com/codebotsargentina/" target="_blank" rel="noopener">Instagram</a>
       <a class="btn whatsapp"  href="https://api.whatsapp.com/message/GU4CNXU5ME4BH1?autoload=1&app_absent=0" target="_blank" rel="noopener">WhatsApp</a>
-      <a class="btn sorteo"     href="https://docs.google.com/forms/d/e/1FAIpQLSdXyYNr6Tr0QYBEtIs9GUiIdol9NMm3zD1O1VJL_eHhBi7BEw/viewform?usp=dialog" target="_blank" rel="noopener">
+      <a class="btn sorteo" href="https://docs.google.com/forms/d/e/1FAIpQLSdXyYNr6Tr0QYBEtIs9GUiIdol9NMm3zD1O1VJL_eHhBi7BEw/viewform?usp=dialog" target="_blank" rel="noopener">
         🎟️ Inscripción <span class="badge">Beca 1 mes</span>
       </a>
     </div>
@@ -58,15 +58,21 @@
 </div>
 
 <script>
+/* ==================== BOOT & CARGA ROBUSTA ==================== */
 const params = new URLSearchParams(location.search);
-const id = params.get("objeto") || "baston";
+const id = params.get("objeto") || "baston"; // default
 
-let textoCompleto = "", escribiendo = false;
+let textoCompleto = "";
+let escribiendo = false;
 
+/* anti-cache + errores visibles + validación JSON */
 async function cargarJSON(id){
-  const r = await fetch(`./${id}.json`, {cache:"no-store"});
-  if(!r.ok) throw new Error("No se encontró el JSON: " + id + ".json");
-  return r.json();
+  const url = `./${id}.json?v=${Date.now()}`;
+  const r = await fetch(url, {cache:"no-store"});
+  if(!r.ok) throw new Error(`No se encontró el JSON (${r.status}) → ${id}.json`);
+  const txt = await r.text();
+  try { return JSON.parse(txt); }
+  catch(e){ throw new Error(`Error de sintaxis en ${id}.json → ${e.message}`); }
 }
 
 function narrar(d){
@@ -75,40 +81,44 @@ function narrar(d){
   const nombre  = d.titulo || d.nombre || id;
   const utilidad = d.utilidad || d.funcion || "aprender y jugar";
   return (`¡Hola! Soy ${nombre}. Nací en CODEBOTS y me construyeron ${creador}. ` +
-          `Uso ${comp} para ${utilidad}.`).replace(/\s+/g," ").trim();
+          (comp ? `Uso ${comp} ` : "") + `para ${utilidad}.`).replace(/\s+/g," ").trim();
 }
 
 function render(d){
   document.getElementById("titulo").textContent = d.titulo || d.nombre || id;
   document.getElementById("sub").textContent = d.descripcion || "";
 
-  const chips = document.getElementById("chips"); chips.innerHTML = "";
+  const chips = document.getElementById("chips");
+  chips.innerHTML = "";
   (d.componentes||[]).forEach(x=>{
     const pill = document.createElement("div");
     pill.className="pill"; pill.textContent=x; chips.appendChild(pill);
   });
 
   textoCompleto = narrar(d);
-  document.getElementById("hablar").onclick = reproducir;
   resetTypewriter();
+  document.getElementById("hablar").onclick = reproducir;
 }
 
+/* ==================== TYPEWRITER + VOZ ==================== */
 function resetTypewriter(){ escribiendo=false; document.getElementById("type").textContent=""; }
 function mostrarHasta(i){ document.getElementById("type").textContent = textoCompleto.slice(0,i); }
 
 function reproducir(){
   speechSynthesis.cancel(); resetTypewriter();
   const u = new SpeechSynthesisUtterance(textoCompleto);
-  u.lang="es-AR"; u.rate=1;
+  u.lang = "es-AR"; u.rate = 1;
   u.onboundary = e => { if(typeof e.charIndex==="number"){ mostrarHasta(e.charIndex); escribiendo=true; } };
+  // Fallback si el navegador no emite boundary:
   let i=0; const fb=setInterval(()=>{ if(escribiendo){clearInterval(fb);return;} if(i<=textoCompleto.length){mostrarHasta(i++)} else {clearInterval(fb)} },22);
   u.onend = ()=>{ mostrarHasta(textoCompleto.length); escribiendo=false; };
   speechSynthesis.speak(u);
 }
 
+/* ==================== INICIO ==================== */
 cargarJSON(id).then(render).catch(err=>{
   document.getElementById("type").textContent = err.message;
-  document.getElementById("sub").textContent = "Revisá el nombre del archivo y el parámetro ?objeto=";
+  document.getElementById("sub").textContent = "Revisá el nombre exacto del archivo y el parámetro ?objeto=…";
 });
 </script>
 </body>
