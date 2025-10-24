@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>CODEBOTS · Generador de QR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Ubuntu;background:#0b1220;color:#e5e7eb;margin:0;padding:20px;text-align:center}
+  h1{margin-top:0;color:#22d3ee}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:25px;max-width:900px;margin:0 auto}
+  .card{background:#0f172a;border:1px solid #1f2937;border-radius:14px;padding:14px;box-shadow:0 5px 15px rgba(0,0,0,.3)}
+  .card h2{margin:10px 0;color:#22d3ee}
+  canvas{background:#fff;border-radius:10px;padding:6px}
+  footer{margin-top:30px;color:#94a3b8;font-size:.9rem}
+</style>
+</head>
+<body>
+<h1>Generador de códigos QR · CODEBOTS</h1>
+<p>Escaneá o descargá los QR para cada proyecto.</p>
+
+<div class="grid" id="grid"></div>
+
+<footer>© CODEBOTS · Villa Carlos Paz</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script>
+const base = "https://maxitelmo.github.io/Memoria_Expandida_Codebots/index_story.html?objeto=";
+const proyectos = [
+  {id:"baston", titulo:"Bastón para ciegos"},
+  {id:"futbot-arquero-joystick", titulo:"FutBot Arquero"},
+  {id:"steve-minecraft-saludador", titulo:"Steve saludador"}
+];
+
+const grid = document.getElementById("grid");
+proyectos.forEach(p=>{
+  const div = document.createElement("div");
+  div.className="card";
+  div.innerHTML = `<h2>${p.titulo}</h2><canvas id="qr-${p.id}"></canvas><br><small>${base+p.id}</small>`;
+  grid.appendChild(div);
+  const url = base+p.id;
+  QRCode.toCanvas(document.getElementById("qr-"+p.id), url, {width:220,color:{dark:"#000",light:"#fff"}});
+});
+</script>
+</body>
+</html>
