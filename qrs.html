@@ -2,26 +2,57 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>CODEBOTS · Generador de QR</title>
+<title>CODEBOTS · Códigos QR con logo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  body{font-family:system-ui,Segoe UI,Roboto,Ubuntu;background:#0b1220;color:#e5e7eb;margin:0;padding:20px;text-align:center}
+  body{
+    font-family:system-ui,Segoe UI,Roboto,Ubuntu;
+    background:linear-gradient(135deg,#0b1220,#0f172a);
+    color:#e5e7eb;
+    margin:0;
+    padding:20px;
+    text-align:center;
+  }
   h1{margin-top:0;color:#22d3ee}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:25px;max-width:900px;margin:0 auto}
-  .card{background:#0f172a;border:1px solid #1f2937;border-radius:14px;padding:14px;box-shadow:0 5px 15px rgba(0,0,0,.3)}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:25px;
+    max-width:900px;
+    margin:0 auto;
+  }
+  .card{
+    background:#0f172a;
+    border:1px solid #1f2937;
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 5px 15px rgba(0,0,0,.3);
+  }
   .card h2{margin:10px 0;color:#22d3ee}
-  canvas{background:#fff;border-radius:10px;padding:6px}
+  canvas{
+    background:#fff;
+    border-radius:10px;
+    padding:6px;
+  }
+  small{
+    color:#94a3b8;
+    display:block;
+    margin-top:6px;
+    font-size:.8rem;
+    word-wrap:break-word;
+  }
   footer{margin-top:30px;color:#94a3b8;font-size:.9rem}
 </style>
 </head>
 <body>
-<h1>Generador de códigos QR · CODEBOTS</h1>
-<p>Escaneá o descargá los QR para cada proyecto.</p>
+<h1>Códigos QR de proyectos CODEBOTS</h1>
+<p>Escaneá o descargá los QR con el logo CODEBOTS en el centro.</p>
 
 <div class="grid" id="grid"></div>
 
 <footer>© CODEBOTS · Villa Carlos Paz</footer>
 
+<!-- Librería QR (funciona offline si la guardás localmente) -->
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
 const base = "https://maxitelmo.github.io/Memoria_Expandida_Codebots/index_story.html?objeto=";
@@ -31,15 +62,40 @@ const proyectos = [
   {id:"steve-minecraft-saludador", titulo:"Steve saludador"}
 ];
 
-const grid = document.getElementById("grid");
-proyectos.forEach(p=>{
-  const div = document.createElement("div");
-  div.className="card";
-  div.innerHTML = `<h2>${p.titulo}</h2><canvas id="qr-${p.id}"></canvas><br><small>${base+p.id}</small>`;
-  grid.appendChild(div);
-  const url = base+p.id;
-  QRCode.toCanvas(document.getElementById("qr-"+p.id), url, {width:220,color:{dark:"#000",light:"#fff"}});
-});
+// cargar logo
+const logo = new Image();
+logo.src = "LOGO_CODE_transparente.png"; // debe estar en la raíz
+
+logo.onload = () => {
+  const grid = document.getElementById("grid");
+  proyectos.forEach(p=>{
+    const div = document.createElement("div");
+    div.className="card";
+    div.innerHTML = `<h2>${p.titulo}</h2><canvas id="qr-${p.id}" width="240" height="240"></canvas><small>${base+p.id}</small>`;
+    grid.appendChild(div);
+
+    const url = base+p.id;
+    const canvas = document.getElementById("qr-"+p.id);
+
+    // generar QR
+    QRCode.toCanvas(canvas, url, {
+      width:240,
+      margin:2,
+      color:{dark:"#000", light:"#FFF"}
+    }, err=>{
+      if(err) console.error(err);
+      const ctx = canvas.getContext("2d");
+
+      // dibujar logo centrado (ajustar tamaño según tu logo)
+      const size = 60; // tamaño del logo en px
+      const x = (canvas.width - size) / 2;
+      const y = (canvas.height - size) / 2;
+      ctx.fillStyle = "#fff"; // fondo blanco detrás del logo
+      ctx.fillRect(x-4, y-4, size+8, size+8);
+      ctx.drawImage(logo, x, y, size, size);
+    });
+  });
+};
 </script>
 </body>
 </html>
